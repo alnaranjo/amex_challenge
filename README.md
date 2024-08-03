@@ -9,33 +9,34 @@
 
 2. building
 
-- Having esbuild params in npm scripts is not scalable. Need to introduce proper esbuild config files, this requires
-- Current setup minifies code, not ideal during dev as makes debug more difficult. Need dev/prod build setup
+- Having esbuild params in npm scripts is not scalable. Need to introduce proper esbuild config files, this requires restructuring the codebase so there's a cleaner separation of concerns
+- Current setup minifies code, not ideal during dev as makes debugging more difficult. Needs a proper dev/prod build setup
 
 3. monorepo structure
 
-- Code for client, server, libraries and development is currently maintained in single place, ok for a small project but not ideal for a production ready codebase
-- This makes for a confusing dev experience as code that pertains to client and server is tangled together making watch building complicated and testing changes slower than what could be
+- Code for client, server, libraries and development is currently maintained in single place, this might be ok for a small project but not ideal for a production ready codebase
+- Current setup makes for a confusing dev experience as code that pertains to client and server is tangled together making watch building complicated and testing changes slower than what could be accomplished with a proper repo structure
 - Separates deps for client and server, reducing bundle sizes
-- Allows a separation of concerns
+- Allows separation of concerns between deployable code and libraries and common code that supports them
 
 4. testing
 
 - Needed to ensure changes that happens on the repo lifecycle do not introduce bugs
+- Tests could include unit, end to end, performance test, etc
 
 5. CI/CD
 
-- No ci/cd exists. Continuous collaboration in this repo is very limited
+- No ci/cd exists. Continuous collaboration on this repo is very limited
 
 5. Development experience
 
 - Needs additional npm scripts to watch changes in source code and build accordingly
-- Could benefit from adding a tmuxinator config file so build for server and client can be done concurrently through a tmux session that's easier to maintain than running npm scrips separately
+- Running the project is fine but the scripts that allws this functionality are not scalable, build and run commands in a single npm script work for a small app but not for an evolving codebase nor something production ready, these scripts need to live in proper shell scripts or even makefiles
+- Could benefit from adding a tmuxinator config file so build for server and client can be done concurrently through a tmux session. Building, watching for changes and running the apps would be easier to maintain than running npm scrips separately. This might introduce a learning curve for new and inexperienced dev but worth it in the long run.
 
-##### Blockers to change files into a proper monorepo
+##### Existing blockers to change current setup into a proper monorepo
 
-- Framework setup makes hard to split the current repo into a more maintable codebase without refactoring files that use `startMswServer`. This can be time consuming an in order to honor the timeframe
-  set for the challenge I've opted to only document my proposed setup;
+- Framework setup makes hard to split the current repo into a more maintable codebase without refactoring files that use `startMswServer`. This can be time consuming an in order to honor the timeframe set for the challenge I've opted to only document my proposed setup
 
 #### Ideal repo structure
 
