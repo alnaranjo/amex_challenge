@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { getCache } from './cache';
 // You may edit this file, add new files to support this file,
 // and/or add new dependencies to the project as you see fit.
 // However, you must not change the surface API presented from this file,
@@ -27,13 +29,62 @@ type UseCachingFetch = (url: string) => {
  * 4. This file passes a type-check.
  *
  */
+
+const fetchDataFromAPI = (
+	url: string,
+	callback: (data: unknown | null, error: Error | null) => void
+) => {
+	fetch(url)
+		.then((response) => {
+			if (response.ok) {
+				const cache = getCache();
+				response.json().then((json) => {
+					cache.set(url, json);
+					callback(json, null);
+				});
+			} else {
+				const error = new Error(`Response status: ${response.status}`);
+				callback(null, error);
+			}
+		})
+		.catch((error) => {
+			const err = new Error(error);
+			callback(null, error);
+		});
+};
+
 export const useCachingFetch: UseCachingFetch = (url) => {
+	const [isLoading, setIsLoading] = useState(false);
+	const [data, setData] = useState<unknown | null>(null);
+	const [error, setError] = useState<Error | null>(null);
+
+	useEffect(() => {
+		const cache = getCache();
+		const cachedData = cache.get(url);
+		console.log({ cachedData });
+		if (cachedData !== undefined) {
+			setIsLoading(false);
+			setError(null);
+			setData(cachedData);
+			return;
+		}
+
+		setIsLoading(true);
+		fetchDataFromAPI(url, (data, error) => {
+			if (!data || error) {
+				setError(error);
+				return;
+			}
+			setData(data);
+			setIsLoading(false);
+			setError(null);
+		});
+	}, [url]);
+
 	return {
-		data: null,
-		isLoading: false,
-		error: new Error(
-			'UseCachingFetch has not been implemented, please read the instructions in DevTask.md'
-		),
+		data: data,
+		isLoading,
+		error,
 	};
 };
 
@@ -52,9 +103,18 @@ export const useCachingFetch: UseCachingFetch = (url) => {
  *
  */
 export const preloadCachingFetch = async (url: string): Promise<void> => {
-	throw new Error(
-		'preloadCachingFetch has not been implemented, please read the instructions in DevTask.md'
-	);
+	const promise = new Promise((resolve, reject) => {
+		fetchDataFromAPI(url, (data, error) => {
+			if (!data || error) {
+				console.log('Error preloading caching fetch', error);
+				reject();
+			}
+			const cache = getCache();
+			cache.set(url, data as Array<Record<string, unknown>>);
+			resolve(null);
+		});
+	});
+	await promise;
 };
 
 /**
@@ -73,8 +133,29 @@ export const preloadCachingFetch = async (url: string): Promise<void> => {
  * 4. This file passes a type-check.
  *
  */
-export const serializeCache = (): string => '';
+export const serializeCache = (): string => {
+	const cache = getCache();
+	const cacheData = Array.from(cache.entries());
+	return JSON.stringify(cacheData);
+};
 
-export const initializeCache = (serializedCache: string): void => {};
+export const initializeCache = (serializedCache: string): void => {
+	const cache = getCache();
+	try {
+		const data = JSON.parse(serializedCache) as [
+			{ [key: string]: Array<Record<string, unknown>> },
+		];
+		data.forEach((entry) => {
+			const key = Object.keys(entry)[0];
+			const value = entry[key];
+			cache.set(key, value);
+		});
+	} catch (error) {
+		console.log(error);
+	}
+};
 
-export const wipeCache = (): void => {};
+export const wipeCache = (): void => {
+	const cache = getCache();
+	cache.clear();
+};
