@@ -1,6 +1,6 @@
 const buildHtmlDoc = (
-  [initialHtml, initialData]: [string, string?],
-  withScript = true,
+	[initialHtml, initialData]: [string, string?],
+	withScript = true
 ): string => `<!doctype html>
 <html lang="en">
 <head>

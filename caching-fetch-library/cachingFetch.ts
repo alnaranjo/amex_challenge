@@ -4,9 +4,9 @@
 // and you should not need to change any other files in the project to complete the challenge
 
 type UseCachingFetch = (url: string) => {
-  isLoading: boolean;
-  data: unknown;
-  error: Error | null;
+	isLoading: boolean;
+	data: unknown;
+	error: Error | null;
 };
 
 /**
@@ -28,13 +28,13 @@ type UseCachingFetch = (url: string) => {
  *
  */
 export const useCachingFetch: UseCachingFetch = (url) => {
-  return {
-    data: null,
-    isLoading: false,
-    error: new Error(
-      'UseCachingFetch has not been implemented, please read the instructions in DevTask.md',
-    ),
-  };
+	return {
+		data: null,
+		isLoading: false,
+		error: new Error(
+			'UseCachingFetch has not been implemented, please read the instructions in DevTask.md'
+		),
+	};
 };
 
 /**
@@ -52,9 +52,9 @@ export const useCachingFetch: UseCachingFetch = (url) => {
  *
  */
 export const preloadCachingFetch = async (url: string): Promise<void> => {
-  throw new Error(
-    'preloadCachingFetch has not been implemented, please read the instructions in DevTask.md',
-  );
+	throw new Error(
+		'preloadCachingFetch has not been implemented, please read the instructions in DevTask.md'
+	);
 };
 
 /**
