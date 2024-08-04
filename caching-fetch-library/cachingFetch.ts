@@ -61,7 +61,6 @@ export const useCachingFetch: UseCachingFetch = (url) => {
 	useEffect(() => {
 		const cache = getCache();
 		const cachedData = cache.get(url);
-		console.log({ cachedData });
 		if (cachedData !== undefined) {
 			setIsLoading(false);
 			setError(null);
