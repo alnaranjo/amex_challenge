@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getCache } from './cache';
+import { getCache, setCache } from './cache';
 // You may edit this file, add new files to support this file,
 // and/or add new dependencies to the project as you see fit.
 // However, you must not change the surface API presented from this file,
@@ -135,23 +135,16 @@ export const preloadCachingFetch = async (url: string): Promise<void> => {
  */
 export const serializeCache = (): string => {
 	const cache = getCache();
-	const cacheData = Array.from(cache.entries());
+	const cacheData = Object.fromEntries(cache);
 	return JSON.stringify(cacheData);
 };
 
 export const initializeCache = (serializedCache: string): void => {
-	const cache = getCache();
 	try {
-		const data = JSON.parse(serializedCache) as [
-			{ [key: string]: Array<Record<string, unknown>> },
-		];
-		data.forEach((entry) => {
-			const key = Object.keys(entry)[0];
-			const value = entry[key];
-			cache.set(key, value);
-		});
+		const data = JSON.parse(serializedCache);
+		setCache(data);
 	} catch (error) {
-		console.log(error);
+		console.log('Unable to parsed serialized cache', error);
 	}
 };
 

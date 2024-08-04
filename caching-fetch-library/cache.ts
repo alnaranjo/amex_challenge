@@ -9,4 +9,8 @@ const getCache = (): CacheType => {
 	return cache;
 };
 
-export { getCache };
+const setCache = (data: Record<string, Array<Record<string, unknown>>>) => {
+	cache = new Map(Object.entries(data));
+};
+
+export { getCache, setCache };
